@@ -1,34 +1,17 @@
 import type { NextPage } from "next";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
+import { numberToHex } from "@walletconnect/encoding";
 import Banner from "../components/Banner";
 import Blockchain from "../components/Blockchain";
 import Column from "../components/Column";
-import RelayRegionDropdown from "../components/RelayRegionDropdown";
 import Header from "../components/Header";
+import Icon from "../components/Icon";
 import Modal from "../components/Modal";
-import {
-  DEFAULT_COSMOS_METHODS,
-  DEFAULT_EIP155_METHODS,
-  DEFAULT_MAIN_CHAINS,
-  DEFAULT_SOLANA_METHODS,
-  DEFAULT_POLKADOT_METHODS,
-  DEFAULT_MULTIVERSX_METHODS,
-  DEFAULT_TEST_CHAINS,
-  DEFAULT_NEAR_METHODS,
-  DEFAULT_KADENA_METHODS,
-  DEFAULT_TRON_METHODS,
-  DEFAULT_TEZOS_METHODS,
-  DEFAULT_EIP155_OPTIONAL_METHODS,
-  DEFAULT_EIP5792_METHODS,
-  GetCapabilitiesResult,
-} from "../constants";
-import { AccountAction, setLocaleStorageTestnetFlag } from "../helpers";
+import OriginSimulationDropdown from "../components/OriginSimulationDropdown";
+import RelayRegionDropdown from "../components/RelayRegionDropdown";
 import Toggle from "../components/Toggle";
-import RequestModal from "../modals/RequestModal";
-import PairingModal from "../modals/PairingModal";
-import PingModal from "../modals/PingModal";
 import {
   SAccounts,
   SAccountsContainer,
@@ -40,14 +23,32 @@ import {
   SLayout,
   SToggleContainer,
 } from "../components/app";
+import {
+  DEFAULT_BIP122_METHODS,
+  DEFAULT_COSMOS_METHODS,
+  DEFAULT_EIP155_METHODS,
+  DEFAULT_EIP155_OPTIONAL_METHODS,
+  DEFAULT_EIP5792_METHODS,
+  DEFAULT_KADENA_METHODS,
+  DEFAULT_MAIN_CHAINS,
+  DEFAULT_MULTIVERSX_METHODS,
+  DEFAULT_NEAR_METHODS,
+  DEFAULT_POLKADOT_METHODS,
+  DEFAULT_SOLANA_METHODS,
+  DEFAULT_TEST_CHAINS,
+  DEFAULT_TEZOS_METHODS,
+  DEFAULT_TRON_METHODS,
+  GetCapabilitiesResult,
+} from "../constants";
+import { useChainData } from "../contexts/ChainDataContext";
 import { useWalletConnectClient } from "../contexts/ClientContext";
 import { useJsonRpc } from "../contexts/JsonRpcContext";
-import { useChainData } from "../contexts/ChainDataContext";
-import Icon from "../components/Icon";
-import OriginSimulationDropdown from "../components/OriginSimulationDropdown";
+import { AccountAction, setLocaleStorageTestnetFlag } from "../helpers";
 import LoaderModal from "../modals/LoaderModal";
-import { numberToHex } from "@walletconnect/encoding";
+import PairingModal from "../modals/PairingModal";
+import PingModal from "../modals/PingModal";
 import RequestLoaderModal from "../modals/RequestLoaderModal";
+import RequestModal from "../modals/RequestModal";
 
 // Normal import does not work here
 const { version } = require("@walletconnect/sign-client/package.json");
@@ -92,6 +93,7 @@ const Home: NextPage = () => {
     tronRpc,
     tezosRpc,
     kadenaRpc,
+    bip122Rpc,
     isRpcRequestPending,
     rpcResult,
     isTestnet,
@@ -467,6 +469,20 @@ const Home: NextPage = () => {
     ];
   };
 
+  const getBip122Actions = (): AccountAction[] => {
+    const testSignMessage = async (chainId: string, address: string) => {
+      openRequestModal();
+      await bip122Rpc.testSignMessage(chainId, address, "Hello, World!");
+    };
+
+    return [
+      {
+        method: DEFAULT_BIP122_METHODS.BIP122_SIGN_MESSAGE,
+        callback: testSignMessage,
+      },
+    ];
+  };
+
   const getBlockchainActions = (account: string) => {
     const [namespace, chainId, address] = account.split(":");
     switch (namespace) {
@@ -488,6 +504,8 @@ const Home: NextPage = () => {
         return getTezosActions();
       case "kadena":
         return getKadenaActions();
+      case "bip122":
+        return getBip122Actions();
       default:
         break;
     }
@@ -544,7 +562,6 @@ const Home: NextPage = () => {
 
   const renderContent = () => {
     const chainOptions = isTestnet ? DEFAULT_TEST_CHAINS : DEFAULT_MAIN_CHAINS;
-
     return !accounts.length && !Object.keys(balances).length ? (
       <SLanding center>
         <Banner />

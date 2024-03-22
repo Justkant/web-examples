@@ -1,20 +1,21 @@
 import AccountCard from '@/components/AccountCard'
 import AccountPicker from '@/components/AccountPicker'
 import PageHeader from '@/components/PageHeader'
+import { BIP122_MAINNET_CHAINS, BIP122_TEST_CHAINS } from '@/data/Bip122Data'
 import { COSMOS_MAINNET_CHAINS } from '@/data/COSMOSData'
 import { EIP155_MAINNET_CHAINS, EIP155_TEST_CHAINS } from '@/data/EIP155Data'
-import { SOLANA_MAINNET_CHAINS, SOLANA_TEST_CHAINS } from '@/data/SolanaData'
-import { POLKADOT_MAINNET_CHAINS, POLKADOT_TEST_CHAINS } from '@/data/PolkadotData'
-import { MULTIVERSX_MAINNET_CHAINS, MULTIVERSX_TEST_CHAINS } from '@/data/MultiversxData'
-import { TRON_MAINNET_CHAINS, TRON_TEST_CHAINS } from '@/data/TronData'
-import { NEAR_TEST_CHAINS } from '@/data/NEARData'
-import { TEZOS_MAINNET_CHAINS, TEZOS_TEST_CHAINS } from '@/data/TezosData'
 import { KADENA_MAINNET_CHAINS, KADENA_TEST_CHAINS } from '@/data/KadenaData'
+import { MULTIVERSX_MAINNET_CHAINS, MULTIVERSX_TEST_CHAINS } from '@/data/MultiversxData'
+import { NEAR_TEST_CHAINS } from '@/data/NEARData'
+import { POLKADOT_MAINNET_CHAINS, POLKADOT_TEST_CHAINS } from '@/data/PolkadotData'
+import { SOLANA_MAINNET_CHAINS, SOLANA_TEST_CHAINS } from '@/data/SolanaData'
+import { TEZOS_MAINNET_CHAINS, TEZOS_TEST_CHAINS } from '@/data/TezosData'
+import { TRON_MAINNET_CHAINS, TRON_TEST_CHAINS } from '@/data/TronData'
+import useSmartAccounts from '@/hooks/useSmartAccounts'
 import SettingsStore from '@/store/SettingsStore'
 import { Text } from '@nextui-org/react'
 import { Fragment } from 'react'
 import { useSnapshot } from 'valtio'
-import useSmartAccounts from '@/hooks/useSmartAccounts'
 
 export default function HomePage() {
   const {
@@ -28,6 +29,7 @@ export default function HomePage() {
     tronAddress,
     tezosAddress,
     kadenaAddress,
+    bip122Addresses,
     smartAccountEnabled
   } = useSnapshot(SettingsStore.state)
   const { getAvailableSmartAccounts } = useSmartAccounts()
@@ -124,6 +126,17 @@ export default function HomePage() {
           logo={logo}
           rgb={rgb}
           address={kadenaAddress}
+          chainId={caip10}
+          data-testid={'chain-card-' + caip10.toString()}
+        />
+      ))}
+      {Object.entries(BIP122_MAINNET_CHAINS).map(([caip10, { name, logo, rgb }]) => (
+        <AccountCard
+          key={name}
+          name={name}
+          logo={logo}
+          rgb={rgb}
+          address={bip122Addresses.get(caip10) || ''}
           chainId={caip10}
           data-testid={'chain-card-' + caip10.toString()}
         />
@@ -243,6 +256,17 @@ export default function HomePage() {
               logo={logo}
               rgb={rgb}
               address={kadenaAddress}
+              chainId={caip10}
+              data-testid={'chain-card-' + caip10.toString()}
+            />
+          ))}
+          {Object.entries(BIP122_TEST_CHAINS).map(([caip10, { name, logo, rgb }]) => (
+            <AccountCard
+              key={name}
+              name={name}
+              logo={logo}
+              rgb={rgb}
+              address={bip122Addresses.get(caip10) || ''}
               chainId={caip10}
               data-testid={'chain-card-' + caip10.toString()}
             />

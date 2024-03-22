@@ -1,24 +1,26 @@
 import { ProposalTypes } from "@walletconnect/types";
 import {
+  DEFAULT_BIP122_EVENTS,
+  DEFAULT_BIP122_METHODS,
   DEFAULT_COSMOS_EVENTS,
   DEFAULT_COSMOS_METHODS,
   DEFAULT_EIP155_METHODS,
   DEFAULT_EIP_155_EVENTS,
-  DEFAULT_SOLANA_EVENTS,
-  DEFAULT_SOLANA_METHODS,
-  DEFAULT_POLKADOT_EVENTS,
-  DEFAULT_POLKADOT_METHODS,
-  DEFAULT_NEAR_METHODS,
-  DEFAULT_NEAR_EVENTS,
-  DEFAULT_KADENA_METHODS,
   DEFAULT_KADENA_EVENTS,
+  DEFAULT_KADENA_METHODS,
   DEFAULT_MULTIVERSX_EVENTS,
   DEFAULT_MULTIVERSX_METHODS,
-  DEFAULT_TRON_METHODS,
-  DEFAULT_TRON_EVENTS,
-  DEFAULT_TEZOS_METHODS,
-  DEFAULT_TEZOS_EVENTS,
+  DEFAULT_NEAR_EVENTS,
+  DEFAULT_NEAR_METHODS,
   DEFAULT_OPTIONAL_METHODS,
+  DEFAULT_POLKADOT_EVENTS,
+  DEFAULT_POLKADOT_METHODS,
+  DEFAULT_SOLANA_EVENTS,
+  DEFAULT_SOLANA_METHODS,
+  DEFAULT_TEZOS_EVENTS,
+  DEFAULT_TEZOS_METHODS,
+  DEFAULT_TRON_EVENTS,
+  DEFAULT_TRON_METHODS,
 } from "../constants";
 
 export const getNamespacesFromChains = (chains: string[]) => {
@@ -53,6 +55,8 @@ export const getSupportedRequiredMethodsByNamespace = (namespace: string) => {
       return Object.values(DEFAULT_TEZOS_METHODS);
     case "kadena":
       return Object.values(DEFAULT_KADENA_METHODS);
+    case "bip122":
+      return Object.values(DEFAULT_BIP122_METHODS);
     default:
       throw new Error(
         `No default required methods for namespace: ${namespace}`
@@ -72,6 +76,7 @@ export const getSupportedOptionalMethodsByNamespace = (namespace: string) => {
     case "tron":
     case "tezos":
     case "kadena":
+    case "bip122":
       return [];
     default:
       throw new Error(
@@ -100,6 +105,8 @@ export const getSupportedEventsByNamespace = (namespace: string) => {
       return Object.values(DEFAULT_TEZOS_EVENTS);
     case "kadena":
       return Object.values(DEFAULT_KADENA_EVENTS);
+    case "bip122":
+      return Object.values(DEFAULT_BIP122_EVENTS);
     default:
       throw new Error(`No default events for namespace: ${namespace}`);
   }

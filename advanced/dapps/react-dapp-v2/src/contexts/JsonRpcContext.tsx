@@ -1,25 +1,24 @@
-import { BigNumber, utils } from "ethers";
-import { createContext, ReactNode, useContext, useState } from "react";
-import * as encoding from "@walletconnect/encoding";
-import { Transaction as EthTransaction } from "@ethereumjs/tx";
 import { recoverTransaction } from "@celo/wallet-base";
+import { Transaction as EthTransaction } from "@ethereumjs/tx";
+import {
+  Connection,
+  Keypair,
+  Transaction as SolanaTransaction,
+  SystemProgram,
+  clusterApiUrl,
+} from "@solana/web3.js";
+import * as encoding from "@walletconnect/encoding";
+import bs58 from "bs58";
 import {
   formatDirectSignDoc,
   stringifySignDocValues,
   verifyAminoSignature,
   verifyDirectSignature,
 } from "cosmos-wallet";
-import bs58 from "bs58";
+import { BigNumber, utils } from "ethers";
+import { ReactNode, createContext, useContext, useState } from "react";
 import { verifyMessageSignature } from "solana-wallet";
-import {
-  Connection,
-  Keypair,
-  SystemProgram,
-  Transaction as SolanaTransaction,
-  clusterApiUrl,
-} from "@solana/web3.js";
 // @ts-expect-error
-import TronWeb from "tronweb";
 import {
   IPactCommand,
   PactCommand,
@@ -27,6 +26,26 @@ import {
   createWalletConnectSign,
 } from "@kadena/client";
 import { PactNumber } from "@kadena/pactjs";
+import { cryptoWaitReady, signatureVerify } from "@polkadot/util-crypto";
+import TronWeb from "tronweb";
+import { rpcProvidersByChainId } from "../../src/helpers/api";
+import {
+  DEFAULT_BIP122_METHODS,
+  DEFAULT_COSMOS_METHODS,
+  DEFAULT_EIP155_METHODS,
+  DEFAULT_EIP155_OPTIONAL_METHODS,
+  DEFAULT_EIP5792_METHODS,
+  DEFAULT_KADENA_METHODS,
+  DEFAULT_MULTIVERSX_METHODS,
+  DEFAULT_NEAR_METHODS,
+  DEFAULT_POLKADOT_METHODS,
+  DEFAULT_SOLANA_METHODS,
+  DEFAULT_TEZOS_METHODS,
+  DEFAULT_TRON_METHODS,
+  GetCallsResult,
+  GetCapabilitiesResult,
+  SendCallsParams,
+} from "../constants";
 import {
   KadenaAccount,
   eip712,
@@ -38,35 +57,16 @@ import {
   hashTypedDataMessage,
   verifySignature,
 } from "../helpers";
-import { useWalletConnectClient } from "./ClientContext";
-import {
-  DEFAULT_COSMOS_METHODS,
-  DEFAULT_EIP155_METHODS,
-  DEFAULT_SOLANA_METHODS,
-  DEFAULT_POLKADOT_METHODS,
-  DEFAULT_NEAR_METHODS,
-  DEFAULT_MULTIVERSX_METHODS,
-  DEFAULT_TRON_METHODS,
-  DEFAULT_TEZOS_METHODS,
-  DEFAULT_KADENA_METHODS,
-  DEFAULT_EIP155_OPTIONAL_METHODS,
-  DEFAULT_EIP5792_METHODS,
-  SendCallsParams,
-  GetCapabilitiesResult,
-  GetCallsResult,
-} from "../constants";
 import { useChainData } from "./ChainDataContext";
-import { rpcProvidersByChainId } from "../../src/helpers/api";
-import { signatureVerify, cryptoWaitReady } from "@polkadot/util-crypto";
+import { useWalletConnectClient } from "./ClientContext";
 
 import {
-  Transaction as MultiversxTransaction,
-  TransactionPayload,
   Address,
+  Transaction as MultiversxTransaction,
   SignableMessage,
+  TransactionPayload,
 } from "@multiversx/sdk-core";
 import { UserVerifier } from "@multiversx/sdk-wallet/out/userVerifier";
-import { SignClient } from "@walletconnect/sign-client/dist/types/client";
 import { parseEther } from "ethers/lib/utils";
 
 /**
@@ -132,6 +132,9 @@ interface IContext {
     testGetAccounts: TRpcRequestCallback;
     testSign: TRpcRequestCallback;
     testQuicksign: TRpcRequestCallback;
+  };
+  bip122Rpc: {
+    testSignMessage: TRpcRequestCallback;
   };
   rpcResult?: IFormattedRpcResponse | null;
   isRpcRequestPending: boolean;
@@ -1621,6 +1624,38 @@ export function JsonRpcContextProvider({
     ),
   };
 
+  const bip122Rpc = {
+    testSignMessage: _createJsonRpcRequestHandler(
+      async (
+        chainId: string,
+        address: string
+      ): Promise<IFormattedRpcResponse> => {
+        try {
+          const message = "This is a message to be signed for BIP122";
+          const result = await client!.request<string>({
+            chainId,
+            topic: session!.topic,
+            request: {
+              method: DEFAULT_BIP122_METHODS.BIP122_SIGN_MESSAGE,
+              params: {
+                address,
+                message,
+              },
+            },
+          });
+          return {
+            method: DEFAULT_BIP122_METHODS.BIP122_SIGN_MESSAGE,
+            address,
+            valid: true,
+            result: result,
+          };
+        } catch (error: any) {
+          throw new Error(error);
+        }
+      }
+    ),
+  };
+
   return (
     <JsonRpcContext.Provider
       value={{
@@ -1634,6 +1669,7 @@ export function JsonRpcContextProvider({
         tronRpc,
         tezosRpc,
         kadenaRpc,
+        bip122Rpc,
         rpcResult: result,
         isRpcRequestPending: pending,
         isTestnet,

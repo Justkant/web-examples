@@ -31,6 +31,7 @@ interface State {
     | 'SessionSignTronModal'
     | 'SessionSignTezosModal'
     | 'SessionSignKadenaModal'
+    | 'SessionSignBip122Modal'
     | 'AuthRequestModal'
     | 'SessionAuthenticateModal'
     | 'LoadingModal'

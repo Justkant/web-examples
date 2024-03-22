@@ -54,7 +54,12 @@
     "solana-wallet": "^1.0.2",
     "tronweb": "^4.4.0",
     "valtio": "1.13.2",
-    "viem": "2.9.29"
+    "viem": "2.9.29",
+    "bitcoinjs-lib": "6.1.5",
+    "bip32": "4.0.0",
+    "bip39": "3.1.0",
+    "bitcoinjs-message": "2.2.0",
+    "tiny-secp256k1": "2.2.3"
   },
   "devDependencies": {
     "@types/node": "17.0.35",
@@ -66,5 +71,6 @@
     "jsonc-eslint-parser": "^2.4.0",
     "prettier": "2.6.2",
     "typescript": "5.2.2"
-  }
+  },
+  "packageManager": "yarn@1.22.19+sha1.4ba7fc5c6e704fce2066ecbfb0b0d8976fe62447"
 }

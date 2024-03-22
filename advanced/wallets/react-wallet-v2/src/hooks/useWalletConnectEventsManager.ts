@@ -1,24 +1,25 @@
-import { Web3WalletTypes } from '@walletconnect/web3wallet'
+import { BIP122_METHODS } from '@/data/Bip122Data'
 import { COSMOS_SIGNING_METHODS } from '@/data/COSMOSData'
 import { EIP155_SIGNING_METHODS } from '@/data/EIP155Data'
 import { EIP5792_METHODS } from '@/data/EIP5792Data'
-import { SOLANA_SIGNING_METHODS } from '@/data/SolanaData'
-import { POLKADOT_SIGNING_METHODS } from '@/data/PolkadotData'
+import { KADENA_SIGNING_METHODS } from '@/data/KadenaData'
 import { MULTIVERSX_SIGNING_METHODS } from '@/data/MultiversxData'
+import { NEAR_SIGNING_METHODS } from '@/data/NEARData'
+import { POLKADOT_SIGNING_METHODS } from '@/data/PolkadotData'
+import { SOLANA_SIGNING_METHODS } from '@/data/SolanaData'
+import { TEZOS_SIGNING_METHODS } from '@/data/TezosData'
 import { TRON_SIGNING_METHODS } from '@/data/TronData'
+import EIP155Lib from '@/lib/EIP155Lib'
 import ModalStore from '@/store/ModalStore'
 import SettingsStore from '@/store/SettingsStore'
-import { web3wallet } from '@/utils/WalletConnectUtil'
-import { SignClientTypes } from '@walletconnect/types'
-import { useCallback, useEffect } from 'react'
-import { NEAR_SIGNING_METHODS } from '@/data/NEARData'
-import { approveNearRequest } from '@/utils/NearRequestHandlerUtil'
-import { TEZOS_SIGNING_METHODS } from '@/data/TezosData'
-import { KADENA_SIGNING_METHODS } from '@/data/KadenaData'
-import { formatJsonRpcError } from '@json-rpc-tools/utils'
-import { approveEIP5792Request } from '@/utils/EIP5792RequestHandlerUtils'
-import EIP155Lib from '@/lib/EIP155Lib'
 import { getWallet } from '@/utils/EIP155WalletUtil'
+import { approveEIP5792Request } from '@/utils/EIP5792RequestHandlerUtils'
+import { approveNearRequest } from '@/utils/NearRequestHandlerUtil'
+import { web3wallet } from '@/utils/WalletConnectUtil'
+import { formatJsonRpcError } from '@json-rpc-tools/utils'
+import { SignClientTypes } from '@walletconnect/types'
+import { Web3WalletTypes } from '@walletconnect/web3wallet'
+import { useCallback, useEffect } from 'react'
 
 export default function useWalletConnectEventsManager(initialized: boolean) {
   /******************************************************************************
@@ -139,6 +140,8 @@ export default function useWalletConnectEventsManager(initialized: boolean) {
         case KADENA_SIGNING_METHODS.KADENA_SIGN:
         case KADENA_SIGNING_METHODS.KADENA_QUICKSIGN:
           return ModalStore.open('SessionSignKadenaModal', { requestEvent, requestSession })
+        case BIP122_METHODS.BIP122_SIGN_MESSAGE:
+          return ModalStore.open('SessionSignBip122Modal', { requestEvent, requestSession })
         default:
           return ModalStore.open('SessionUnsuportedMethodModal', { requestEvent, requestSession })
       }
@@ -173,5 +176,5 @@ export default function useWalletConnectEventsManager(initialized: boolean) {
       // load sessions on init
       SettingsStore.setSessions(Object.values(web3wallet.getActiveSessions()))
     }
-  }, [initialized, onAuthRequest, onSessionProposal, onSessionRequest])
+  }, [initialized, onAuthRequest, onSessionAuthenticate, onSessionProposal, onSessionRequest])
 }
