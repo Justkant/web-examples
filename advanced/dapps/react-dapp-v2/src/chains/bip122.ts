@@ -1,10 +1,9 @@
-
 import { JsonRpcRequest } from "@walletconnect/jsonrpc-utils";
 import {
-  NamespaceMetadata,
   ChainMetadata,
   ChainRequestRender,
   ChainsMap,
+  NamespaceMetadata,
 } from "../helpers";
 
 export const Bip122ChainData: ChainsMap = {
@@ -22,8 +21,15 @@ export const Bip122ChainData: ChainsMap = {
     slip44: 2,
     testnet: false,
   },
+  ["82bc68038f6034c0596b6e313729793a"]: {
+    id: "bip122:82bc68038f6034c0596b6e313729793a",
+    name: "Dogecoin",
+    rpc: [""],
+    slip44: 3,
+    testnet: false,
+  },
   ["000000000933ea01ad0ee984209779ba"]: {
-    id: "bip122:000000000019d6689c085ae165831e93",
+    id: "bip122:000000000933ea01ad0ee984209779ba",
     name: "Bitcoin Testnet",
     rpc: [""],
     slip44: 1,
@@ -32,14 +38,21 @@ export const Bip122ChainData: ChainsMap = {
 };
 
 export const Bip122Metadata: NamespaceMetadata = {
-  // eslint-disable-next-line no-useless-computed-key
   ["000000000019d6689c085ae165831e93"]: {
     logo: "/assets/bitcoin.svg",
-    rgb: '247, 147, 26',
+    rgb: "247, 147, 26",
+  },
+  ["000000000933ea01ad0ee984209779ba"]: {
+    logo: "/assets/bitcoin.svg",
+    rgb: "247, 147, 26",
   },
   ["12a765e31ffd4059bada1e25190f6e98"]: {
     logo: "/assets/litecoin.svg",
-    rgb: '52, 93, 175',
+    rgb: "52, 93, 175",
+  },
+  ["82bc68038f6034c0596b6e313729793a"]: {
+    logo: "/assets/dogecoin.svg",
+    rgb: "101, 209, 150",
   },
 };
 

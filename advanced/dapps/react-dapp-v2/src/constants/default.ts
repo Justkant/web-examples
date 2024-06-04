@@ -21,6 +21,7 @@ export const DEFAULT_MAIN_CHAINS = [
   "kadena:mainnet01",
   "bip122:000000000019d6689c085ae165831e93",
   "bip122:12a765e31ffd4059bada1e25190f6e98",
+  "bip122:82bc68038f6034c0596b6e313729793a",
 ];
 
 export const DEFAULT_TEST_CHAINS = [
